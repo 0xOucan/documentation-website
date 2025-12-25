@@ -27,7 +27,7 @@ The CLI validates these automatically.
 ## 1. Clone and Install
 
 ```bash
-git clone https://github.com/EVVM-org/Testnet-Contracts
+git clone --recursive https://github.com/EVVM-org/Testnet-Contracts
 cd Testnet-Contracts
 bun install
 forge install
@@ -41,14 +41,22 @@ cp .env.example .env
 
 Edit `.env` with your values:
 ```bash
-# Required: RPC URL for your target network
-RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
+# Configuration for non cross-chain EVVM ================================================
 
-# Optional: Custom Ethereum Sepolia RPC for registry operations
-ETH_SEPOLIA_RPC="https://gateway.tenderly.co/public/sepolia"
+# RPC URL for host blockchain to deploy non cross-chain EVVM instance
+RPC_URL="http://0.0.0.0:8545"
 
-# Optional: Etherscan API key for contract verification
-ETHERSCAN_API="your_etherscan_api_key"
+# Configuration for EVVM registration ===================================================
+
+# RPC URL for optional registration on Ethereum Sepolia Testnet
+EVVM_REGISTRATION_RPC_URL="https://gateway.tenderly.co/public/sepolia"
+
+# =======================================================================================
+# BLOCKCHAIN EXPLORERS API KEYS
+# =======================================================================================
+# Etherscan v2 API Key (for contract verification on Ethereum networks)
+# Get from: https://etherscan.io/apis
+ETHERSCAN_API="YOUR_ETHERSCAN_API_KEY"
 ```
 
 :::warning[Never Store Private Keys in .env]
@@ -77,9 +85,20 @@ Then specify it during deployment:
 
 ## 4. Deploy with CLI
 
+If you are on linux or macOS, run:
 ```bash
 ./evvm deploy
 ```
+
+If you are on Windows, run on PowerShell:
+```bash
+.\evvm.bat deploy
+```
+
+:::info
+Some systems may require `chmod +x evvm` to make the script executable.
+:::
+
 
 The interactive wizard will:
 1. Validate prerequisites
@@ -230,23 +249,36 @@ Faucets: [ethglobal.com/faucet](https://ethglobal.com/faucet/), [alchemy.com/fau
 
 ## CLI Command Reference
 
-**Available Commands:**
+**Quick & simple:**
 ```bash
-./evvm deploy              # Deploy new EVVM instance
-./evvm register            # Register existing EVVM
-./evvm fulltest            # Run complete test suite
-./evvm help                # Show all commands and options
-./evvm version             # Display CLI version
+./evvm deploy            # Interactive deploy
+./evvm deploy -s         # Deploy using existing config (non-interactive)
+./evvm deploy -c         # Deploy a cross-chain EVVM (advanced)
+./evvm register          # Register an EVVM in the registry
+./evvm register -c       # Register a cross-chain EVVM (advanced)
+./evvm setUpCrossChainTreasuries  # Configure cross-chain treasuries (if needed)
+./evvm fulltest          # Run tests
+./evvm help              # Show help
 ```
 
-**Deploy Options:**
-- `--skipInputConfig`, `-s` - Use existing configuration file
-- `--walletName <name>`, `-w <name>` - Specify Foundry wallet
+**Common examples:**
+```bash
+# Interactive deploy
+./evvm deploy
 
-**Register Options:**
-- `--evvmAddress <address>` - EVVM contract address
-- `--walletName <name>`, `-w <name>` - Specify Foundry wallet
-- `--useCustomEthRpc` - Use custom Ethereum Sepolia RPC
+# Non-interactive deploy (use saved inputs)
+./evvm deploy -s
+
+# Register an EVVM
+./evvm register --evvmAddress 0x... --walletName myWallet
+```
+
+**Tip:** Import wallets securely:
+```bash
+cast wallet import defaultKey --interactive
+```
+
+**Support:** `https://github.com/EVVM-org/Testnet-Contracts/issues`
 
 ## Next Steps
 
